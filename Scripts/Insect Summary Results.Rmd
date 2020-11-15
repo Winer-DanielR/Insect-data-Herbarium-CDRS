@@ -1,0 +1,15 @@
+---
+title: "Análisis de datos de insectos colectados en el Herbario de CDRS"
+author: 
+date: 
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r script setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+source("00_packages_v1.R", local = knitr::knit_global())
+source("02_meandata_v1.R", local = knitr::knit_global())
+```
+
