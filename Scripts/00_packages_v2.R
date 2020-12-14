@@ -6,8 +6,7 @@
 
 library(tidyverse) #For data cleaning and graphs
 library(lme4) #For modeling
-library(car)
-library(lmerTest)
+library(car) #For model analysis
 library(readr) #For reading cvs files
 library("lubridate")
 
