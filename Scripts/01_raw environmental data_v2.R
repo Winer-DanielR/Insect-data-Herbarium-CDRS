@@ -11,7 +11,7 @@
 #### Preparacion de las bases de datos ambientales y de insectos ####
 
 # Temperature dataset
-env_data <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Raw/Datos temperatura y humedad 2012-2020 Herbario CDS .csv")
+env_data <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Raw/environmental data.csv")
 env_data <- as_tibble(env_data)
 
 # Insect trap dataset
@@ -88,12 +88,21 @@ interval_6 <- interval_6[!is.na(interval_6$Humedad_entrada), ]
 
 interval6_mean <- summarise(interval_6, mean_temp = mean(Temp_entrada), mean_hum = mean(Humedad_entrada))
 
-#7th interval 2020_Ene - 2020_Abr #### ESPERAR DATOS ACTUALIZADOS
-interval_6 <- env_data[2116:2205,]
-interval_6 <- interval_6[!is.na(interval_6$Temp_entrada), ]
-interval_6 <- interval_6[!is.na(interval_6$Humedad_entrada), ]
+#7th interval 2020_May - 2020_Jul
+interval_7 <- env_data[2206:2297,]
+interval_7 <- interval_7[!is.na(interval_7$Temp_entrada), ]
+interval_7 <- interval_7[!is.na(interval_7$Humedad_entrada), ]
 
-interval6_mean <- summarise(interval_6, mean_temp = mean(Temp_entrada), mean_hum = mean(Humedad_entrada))
+interval7_mean <- summarise(interval_7, mean_temp = mean(Temp_entrada), mean_hum = mean(Humedad_entrada))
+
+#8th interval 2020_Agos - 2020_Oct
+interval_8 <- env_data[2298:2389,]
+interval_8 <- interval_8[!is.na(interval_8$Temp_entrada), ]
+interval_8 <- interval_8[!is.na(interval_8$Humedad_entrada), ]
+
+interval8_mean <- summarise(interval_8, mean_temp = mean(Temp_entrada), mean_hum = mean(Humedad_entrada))
+
+
 
 ###### Crear nuevas columnas para los datos de temperatura y humedad promedio por intervalos en los datos de insectos ####
 
@@ -121,6 +130,14 @@ monitor_5 <- mutate(monitor_5, temp_mean = interval5_mean$mean_temp, hum_mean = 
 monitor_6 <- filter(monitor_data, monitoreo == 6)
 monitor_6 <- mutate(monitor_6, temp_mean = interval6_mean$mean_temp, hum_mean = interval6_mean$mean_hum)
 
+# Intervalo 7
+monitor_7 <- filter(monitor_data, monitoreo == 7)
+monitor_7 <- mutate(monitor_7, temp_mean = interval7_mean$mean_temp, hum_mean = interval7_mean$mean_hum)
+
+# Intervalo 8
+monitor_8 <- filter(monitor_data, monitoreo == 8)
+monitor_8 <- mutate(monitor_8, temp_mean = interval8_mean$mean_temp, hum_mean = interval8_mean$mean_hum)
+
 
 
 
@@ -131,7 +148,9 @@ insect_env_full_data <- bind_rows(monitor_1,
                                   monitor_3,
                                   monitor_4,
                                   monitor_5,
-                                  monitor_6)
+                                  monitor_6,
+                                  monitor_7,
+                                  monitor_8)
 
 #### Exportar la base de datos con los promedios. Processed dataset ####
 write_csv(insect_env_full_data, "~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/datos de insectos y temperatura final.csv")
