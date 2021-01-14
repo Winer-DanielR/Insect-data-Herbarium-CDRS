@@ -6,7 +6,7 @@
 
 #pest_data<-read_csv("datos_trampas_env_2017-20_oct.csv", h=T, sep=";", dec=",")
 
-pest_data <- read_csv("Data/Raw/datos_trampas_env_2017-20_oct.csv")
+pest_data <- read_csv("Data/Raw/datos_trampas_env_2017-20_version.2dic.csv")
 pest_data <- as_tibble(pest_data)
 
 # Changed variables to factors and scaled temperature and humidity
