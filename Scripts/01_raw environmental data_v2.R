@@ -11,11 +11,11 @@
 #### Preparacion de las bases de datos ambientales y de insectos ####
 
 # Temperature dataset
-env_data <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Raw/environmental data.csv")
+env_data <- read_csv("Data/Raw/environmental data.csv")
 env_data <- as_tibble(env_data)
 
 # Insect trap dataset
-monitor_data <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/datos_trampas_2017_20_V3.csv", 
+monitor_data <- read_csv("Data/Processed/datos_trampas_2017_20_V3.csv", 
                                      col_types = cols(fecha_puesta = col_date(format = "%m/%d/%Y"), 
                                                       fecha_recogida = col_date(format = "%m/%d/%Y"), 
                                                       dias_monitoreo = col_number(), abundancia_trampa = col_number(), 
@@ -245,7 +245,7 @@ insect_env_full_data <- bind_rows(monitor_1,
                                   monitor_8)
 
 #### Exportar la base de datos con los promedios. Processed dataset ####
-write_csv(insect_env_full_data, "~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/datos de insectos y temperatura final.csv")
+write_csv(insect_env_full_data, "Data/Processed/datos de insectos y temperatura final.csv")
 
 
 

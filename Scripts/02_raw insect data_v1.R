@@ -2,7 +2,7 @@
 
 ### Data exploration of insect dataset and environmental variables
 
-pest_data <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/datos de insectos y temperatura final.csv")
+pest_data <- read_csv("Data/Processed/datos de insectos y temperatura final.csv")
 
 # Ajustar variables como factores
 pest_data <- pest_data %>% mutate_at(vars(periodo_monitoreo,
