@@ -28,6 +28,7 @@ full_model <- glmer(abundancia_trampa ~ hum_mean + temp_mean
                     data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 
 #Diagnostic models
+summary(full_model)
 plot(fitted(full_model_scaled),resid(full_model_scaled)) 
 abline(h=0,lty=2,col="red")
 qqnorm(resid(full_model_scaled))
@@ -37,4 +38,17 @@ hist(resid(full_model_scaled))
 ##### Anova comparando cada response variable (humedad y temeperatura media)
 Anova(full_model_scaled)
 emmeans::emmeans(full_model_scaled, specs = "temp_mean")
+emmeans::ref_grid(full_model)
+
+#Diagnostic models
+summary(full_model)
+plot(fitted(full_model),resid(full_model)) 
+abline(h=0,lty=2,col="red")
+qqnorm(resid(full_model))
+qqline(resid(full_model), col="red")
+hist(resid(full_model))
+
+##### Anova comparando cada response variable (humedad y temeperatura media)
+Anova(full_model)
+emmeans::emmeans(full_model, specs = "temp_mean")
 emmeans::ref_grid(full_model)
