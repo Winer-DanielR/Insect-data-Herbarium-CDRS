@@ -45,6 +45,8 @@ null_model_trampa <- glmer(cantidad ~ humedad_scaled + temperatura_scaled + hume
                            + (1|tiempo) + (1|num_trampa) + (1|nombre_cientifico), family=poisson, 
                         data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 
+# are models too complex? Some of the variables may be correlated
+
 #Diagnostic models
 plot(fitted(full_model),resid(full_model)) 
 abline(h=0,lty=2,col="red")
@@ -61,6 +63,13 @@ summary(null_model_trampa)
 null_model_temp <- glmer(cantidad ~ humedad_scaled + humedad_scaled*temperatura_scaled + 
                       trampa + tiempo + (1|num_trampa) + (1|nombre_cientifico) + (1|herbario), family=poisson, 
                     data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
+
+null_model_temp <- glmer(cantidad ~ humedad_scaled + humedad_scaled*temperatura_scaled + 
+                           tiempo + (1|nombre_cientifico), family=poisson, 
+                         data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
+table(pest_data$nombre_cientifico, pest_data$trampa)
+plot(pest_data$nombre_cientifico, pest_data$trampa)
+
 
 #Comparing models
 summary(null_model_temp)
