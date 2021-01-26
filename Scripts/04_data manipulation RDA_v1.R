@@ -34,9 +34,13 @@ species_final <- bind_cols(species_sum, species_info)
 species_final <- rename(species_final, trampa_ID_unico = trampa_ID_unico...1)
 species_final <- species_final[-c(50)]
 
+write_csv(species_final, "Data/Processed/Matrix especies.csv")
+
 # Hacer una matriz de temperatura y humedad por trampa
 
 temp_hum_col <- select(all_data, trampa_ID_unico, temp_mean, hum_mean, fecha_puesta, 
                    fecha_recogida, dias_monitoreo, periodo_monitoreo,
                    monitoreo, tipo_trampa, marca_trampa, ubicacion)
 temp_hum_col <- temp_hum_col %>% group_by(trampa_ID_unico) %>% filter(row_number()==1)
+
+write_csv(temp_hum_col, "Data/Processed/Matrix temperatura humedad.csv")
