@@ -5,6 +5,8 @@
 pest_data <- read_csv("Data/Raw/datos_trampas_env_2017-20_version.2dic.csv")
 pest_data <- as_tibble(pest_data)
 
+# need to add variable columns "tiempo", "year" and "herbario" to new csv
+
 # Changed variables to factors and scaled temperature and humidity
 pest_data <- pest_data %>% mutate_at(vars(fecha_puesta, tiempo, 
                                           year, tipo_trampa, 
