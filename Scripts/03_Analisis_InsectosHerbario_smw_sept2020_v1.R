@@ -2,11 +2,9 @@
 #Explorar los datos de insectos en relacion a los promedios de temperatura
 #y humedad dentro de los intervalos de monitoreo.
 
-#setwd("~/Documents/Herbario CDS/Paper plagas Herbario/Análisis trampas plagas")
-
-#pest_data<-read_csv("datos_trampas_env_2017-20_oct.csv", h=T, sep=";", dec=",")
-
+#library(tidyverse)
 pest_data <- read_csv("Data/Raw/datos_trampas_env_2017-20_version.2dic.csv")
+colnames(pest_data)
 pest_data <- as_tibble(pest_data)
 
 # Changed variables to factors and scaled temperature and humidity
