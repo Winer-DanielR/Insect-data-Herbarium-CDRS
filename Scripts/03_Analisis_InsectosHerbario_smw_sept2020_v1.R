@@ -2,7 +2,8 @@
 #Explorar los datos de insectos en relacion a los promedios de temperatura
 #y humedad dentro de los intervalos de monitoreo.
 
-pest_data <- read_csv("Data/Raw/datos_trampas_env_2017-20_version.2dic.csv")
+#library(tidyverse)
+pest_data <- read_csv("Data/Processed/datos de insectos y temperatura final.csv")
 pest_data <- as_tibble(pest_data)
 
 # need to add variable columns "tiempo", "year" and "herbario" to new csv
