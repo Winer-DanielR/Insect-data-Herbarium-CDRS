@@ -2,49 +2,49 @@
 #Explorar los datos de insectos en relacion a los promedios de temperatura
 #y humedad dentro de los intervalos de monitoreo.
 
-#library(tidyverse)
 pest_data <- read_csv("Data/Processed/datos de insectos y temperatura final.csv")
 pest_data <- as_tibble(pest_data)
 
-# need to add variable columns "tiempo", "year" and "herbario" to new csv
+# Add variable column  "year"
+pest_data$year <- year(pest_data$fecha_recogida)
+select(pest_data, fecha_puesta:fecha_recogida, year, everything())
+
 
 # Changed variables to factors and scaled temperature and humidity
-pest_data <- pest_data %>% mutate_at(vars(fecha_puesta, tiempo, 
+pest_data <- pest_data %>% mutate_at(vars(fecha_puesta, monitoreo, 
                                           year, tipo_trampa, 
-                                          ubicacion, herbario), list(factor))
-pest_data$humedad_scaled <- scale(pest_data$humedad_media)
-pest_data$temperatura_scaled <-scale(pest_data$temperatura_media)
-pest_data$log_cantidad <- log(pest_data$cantidad + 1)
-hist(pest_data$cantidad)
-hist(pest_data$log_cantidad)
+                                          ubicacion), list(factor))
+pest_data$humedad_scaled <- scale(pest_data$hum_mean)
+pest_data$temperatura_scaled <-scale(pest_data$temp_mean)
+pest_data$log_abundancia_trampa <- log(pest_data$abundancia_trampa + 1)
+hist(pest_data$abundancia_trampa)
+hist(pest_data$log_abundancia_trampa)
 
 #Exploring the data
 ggplot(pest_data) +
-  aes(x = year, y = cantidad, fill = familia) +
+  aes(x = year, y = log_abundancia_trampa, fill = familia) +
   geom_boxplot() +
   scale_fill_hue() +
   theme_minimal() +
-  facet_wrap(vars(trampa))
+  facet_wrap(vars(tipo_trampa))
 
 head(pest_data)
 str(pest_data)
 
 # FITTING A GLMM 
 
-####### Efecto de humedad sobre cantidad de insectos ####
-full_model <- glmer(cantidad ~ humedad_scaled + temperatura_scaled + humedad_scaled*temperatura_scaled + 
-                      trampa + (1|tiempo) + (1|num_trampa) + (1|nombre_cientifico) + (1|herbario), family=poisson, 
+####### Efecto de humedad sobre abundancia de insectos ####
+full_model <- glmer(abundancia_trampa ~ humedad_scaled + temperatura_scaled + humedad_scaled*temperatura_scaled + 
+                      tipo_trampa + (1|monitoreo) + (1|num_trampa_monitoreo) + (1|especie) + (1|ubicacion), family=poisson, 
                     data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 
-null_model_hum <- glmer(cantidad ~ temperatura_scaled + humedad_scaled*temperatura_scaled + 
-                      trampa + (1|tiempo) + (1|num_trampa) + (1|nombre_cientifico), family=poisson, 
+null_model_hum <- glmer(abundancia_trampa ~ temperatura_scaled + humedad_scaled*temperatura_scaled + 
+                      tipo_trampa + (1|monitoreo) + (1|num_trampa_monitoreo) + (1|especie), family=poisson, 
                     data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 
-null_model_trampa <- glmer(cantidad ~ humedad_scaled + temperatura_scaled + humedad_scaled*temperatura_scaled 
-                           + (1|tiempo) + (1|num_trampa) + (1|nombre_cientifico), family=poisson, 
+null_model_trampa <- glmer(abundancia_trampa ~ humedad_scaled + temperatura_scaled + humedad_scaled*temperatura_scaled 
+                           + (1|monitoreo) + (1|num_trampa_monitoreo) + (1|especie), family=poisson, 
                         data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
-
-# are models too complex? Some of the variables may be correlated
 
 #Diagnostic models
 plot(fitted(full_model),resid(full_model)) 
@@ -52,22 +52,22 @@ abline(h=0,lty=2,col="red")
 qqnorm(resid(full_model))
 qqline(resid(full_model), col="red")
 hist(resid(full_model))
-
+    
 # Comparing models
 anova (full_model, null_model_trampa, type="chi")
 # Summary of the full model
 summary(null_model_trampa)
 
-##### Efecto de la temperatura en la cantidad de insectos ####
-null_model_temp <- glmer(cantidad ~ humedad_scaled + humedad_scaled*temperatura_scaled + 
-                      trampa + tiempo + (1|num_trampa) + (1|nombre_cientifico) + (1|herbario), family=poisson, 
+##### Efecto de la temperatura en la abundancia de insectos ####
+null_model_temp <- glmer(abundancia_trampa ~ humedad_scaled + humedad_scaled*temperatura_scaled + 
+                      tipo_trampa + monitoreo + (1|num_trampa_monitoreo) + (1|especie) + (1|ubicacion), family=poisson, 
                     data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 
-null_model_temp <- glmer(cantidad ~ humedad_scaled + humedad_scaled*temperatura_scaled + 
-                           tiempo + (1|nombre_cientifico), family=poisson, 
+null_model_temp <- glmer(abundancia_trampa ~ humedad_scaled + humedad_scaled*temperatura_scaled + 
+                           monitoreo + (1|especie), family=poisson, 
                          data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
-table(pest_data$nombre_cientifico, pest_data$trampa)
-plot(pest_data$nombre_cientifico, pest_data$trampa)
+table(pest_data$especie, pest_data$tipo_trampa)
+plot(pest_data$especie, pest_data$tipo_trampa)
 
 
 #Comparing models
@@ -75,8 +75,8 @@ summary(null_model_temp)
 anova(full_model, null_model_temp)
 
 #### Efecto de la interaccion de temperatura y la humedad
-null_model_inter <- glmer(cantidad ~ humedad_scaled + temperatura_scaled 
-                     + trampa + tiempo + (1|num_trampa) + (1|nombre_cientifico) + (1|herbario), family=poisson, 
+null_model_inter <- glmer(abundancia_trampa ~ humedad_scaled + temperatura_scaled 
+                     + tipo_trampa + monitoreo + (1|num_trampa_monitoreo) + (1|especie) + (1|ubicacion), family=poisson, 
                     data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 
 #Comparing models
@@ -86,11 +86,11 @@ anova(full_model, null_model_inter)
 
 
 # Using trap number as factor and using random slopes for trap type
-full_model2 <- glmer(cantidad ~ humedad_scaled + temperatura_scaled
-                    + trampa + (1+trampa|tiempo) + (1+trampa|as.factor(pest_data$num_trampa)), family=poisson, data=pest_data,
+full_model2 <- glmer(abundancia_trampa ~ humedad_scaled + temperatura_scaled
+                    + tipo_trampa + (1+tipo_trampa|monitoreo) + (1+tipo_trampa|as.factor(pest_data$num_trampa_monitoreo)), family=poisson, data=pest_data,
                     control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
-null_model2 <- glmer(cantidad ~ temperatura_scaled +
-                      trampa + (1+trampa|tiempo) + (1+trampa|as.factor(pest_data$num_trampa)), family=poisson, data=pest_data,
+null_model2 <- glmer(abundancia_trampa ~ temperatura_scaled +
+                      tipo_trampa + (1+tipo_trampa|monitoreo) + (1+tipo_trampa|as.factor(pest_data$num_trampa_monitoreo)), family=poisson, data=pest_data,
                      control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 
 #Diagnostic models
@@ -108,15 +108,15 @@ coef(full_model2)
 
 
 
-plot(log(cantidad) ~ jitter(humedad_media), data=pest_data)
-plot(log(cantidad) ~ jitter(temperatura_media), data=pest_data)
+plot(log(abundancia_trampa) ~ jitter(humedad_media), data=pest_data)
+plot(log(abundancia_trampa) ~ jitter(temperatura_media), data=pest_data)
 
 #Considerar la interaccion entre humedad y temperatura dentro del modelo
 
 
 ### https://stackoverflow.com/questions/37090722/lme4lmer-reports-fixed-effect-model-matrix-is-rank-deficient-do-i-need-a-fi
-fix.formula <- cantidad ~ scale(pest_data$humedad_media) + scale(pest_data$temperatura_media) + trampa +
-  tiempo
+fix.formula <- abundancia_trampa ~ scale(pest_data$humedad_media) + scale(pest_data$temperatura_media) + tipo_trampa +
+  monitoreo
 x <- model.matrix(fix.formula, pest_data)
 fix.fit <- lm(fix.formula, pest_data, method = "qr", singular.ok = T)
 p <- length(coef)
@@ -233,7 +233,7 @@ rank <- fix.fit$rank
 # 
 # ?aggregate
 # head(pest_data)
-# #pest_data <- aggregate(Cantidad, by=list(Fecha.de.monitoreo, sum))
+# #pest_data <- aggregate(abundancia_trampa, by=list(Fecha.de.monitoreo, sum))
 # 
 # plot(pest_data$Individuos.monitoreo, pest_data$Temperatura.promedio)
 # 
@@ -245,7 +245,7 @@ rank <- fix.fit$rank
 # 
 # 
 # pest_data$monitoreo=factor(pest_data$monitoreo,levels=unique(pest_data$monitoreo))
-# pest_data$trampa=factor(pest_data$trampa,levels=unique(pest_data$trampa))
+# pest_data$tipo_trampa=factor(pest_data$tipo_trampa,levels=unique(pest_data$tipo_trampa))
 # pest_data$especie=factor(pest_data$especie,ordered=TRUE)
 # pest_data$abundancia=factor(pest_data$abundancia,ordered=TRUE)
 # View(pest_data)
