@@ -52,7 +52,7 @@ abline(h=0,lty=2,col="red")
 qqnorm(resid(full_model))
 qqline(resid(full_model), col="red")
 hist(resid(full_model))
-    
+
 # Comparing models
 anova (full_model, null_model_trampa, type="chi")
 # Summary of the full model
