@@ -1,11 +1,12 @@
 # Correspondence analysis (CA) ===========================================
+# Code for this analysis is based on Numerical Ecology with R. Borcard et. al, 2018
 ## CA of the raw species dataset (species abundance per trap)
 
 # Import dataset
 spe_matrix <- read_csv("Data/Processed/Matrix especies.csv")
 env_matrix <- read_csv("Data/Processed/Matrix temperatura humedad.csv")
 insects <- spe_matrix[-c(1,50:57)]
-insect_log <- log(insects + 1)
+insect_log <- log(insects + 1) # Log transformed data for heat map
 
 # Compute CA
 insects_ca <- cca(insects)
