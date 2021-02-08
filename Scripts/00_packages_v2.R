@@ -14,7 +14,6 @@ library(plotrix) #Standard error
 
 #For CA
 library(ade4)
-library(ade4)
 library(vegan)
 library(gclus)
 library(ape)
