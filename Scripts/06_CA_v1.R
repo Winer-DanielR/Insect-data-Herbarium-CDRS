@@ -25,10 +25,11 @@ screeplot(insects_ca, bstick = TRUE, npcs = length(insects_ca$CA$eig))
 
 # CA biplots
 dev.new(title = "CA biplots", width = 14, heigth = 7, noRStudioGD = TRUE)
-par(mfrow = c(1,2))
+par(mfrow = c(1,1))
 # Scaling 1: sites are centroids of species
 plot(insects_ca, scaling = 1, 
-     main = "CA insect abundances - biplot scaling 1")
+     main = "CA insect abundances - biplot scaling 1",
+     type = "p")
 
 # Scaling 2 (default): species are centroids of sites
 plot(insects_ca, main = "CA fish abundances - biplot scaling 2")
@@ -40,8 +41,10 @@ plot(insects_ca, main = "CA insect abundance - scaling 2",
      sub = "Fitted curves: temperature (red), humidity (green)")
 insect_ca_env <- envfit(insects_ca ~ temp_mean + hum_mean, env_matrix)
 plot(insect_ca_env) # Two arrows
-ordisurf(insects_ca, env_matrix$temp_mean, add = TRUE)
+ordisurf(insects_ca, env_matrix$temp_mean, add = TRUE, col = "red")
 ordisurf(insects_ca, env_matrix$hum_mean, add = TRUE, col = "green")
+
+
 
 # Species data table ordered after CA results
 vegemite(insect_log, insects_ca, scale = "Hill")
