@@ -1,11 +1,16 @@
 ################ Datos de insectos de CDRS #######################
 
-### Data exploration of insect dataset and environmental variables
+# Exploración de datos ambientales del Herbario CDRS. Los datos son
+# mediciones de temperatura y humedad colectados diariamente desde
+# 2012 hasta 2020. 
 
+# En este script: 
 ### Clean the data, check for NAs and get the data ready for analysis
-### Summarized data to estimate means of temperature and humidity given the time intervals of the traps
+### Summarized data to estimate means of temperature and humidity given
+### the time intervals of the traps
 ### See insect dataset.
-### Incorporar promedios de temperatura y humedad dentro de los datos de insectos correspondiente a los intervalos de monitoreo
+### Incorporar promedios de temperatura y humedad dentro de los datos 
+### de insectos correspondiente a los intervalos de monitoreo
 
 
 #### Preparacion de las bases de datos ambientales y de insectos ####
