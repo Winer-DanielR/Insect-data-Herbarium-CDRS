@@ -40,11 +40,11 @@ spe_hel <- decostand(insects, "hellinger")
 summary(spe_rda)	# Scaling 2 (default)
 
 # Canonical coefficients from the rda object
-coef_rda <- coef(spe_rda)
-coef_rda <- coef_rda[-8, ] #Remove NA rows. Do the lines one at a time.
-coef_rda <- coef_rda[-8, ]
-coef_rda <- coef_rda[-9, ]
-coef_rda1 <- coef_rda
+#coef_rda <- coef(spe_rda)
+#coef_rda <- coef_rda[-8, ] #Remove NA rows. Do the lines one at a time.
+#coef_rda <- coef_rda[-8, ]
+#coef_rda <- coef_rda[-9, ]
+#coef_rda1 <- coef_rda
 
 # Unadjusted R^2 retrieved from the rda object
 (R2 <- RsquareAdj(spe_rda)$r.squared)
