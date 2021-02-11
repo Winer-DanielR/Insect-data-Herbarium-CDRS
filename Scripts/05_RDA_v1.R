@@ -30,8 +30,13 @@ spe_hel <- decostand(insects, "hellinger")
 # Redundancy analysis (RDA) =======================================
 
 ## RDA of the Hellinger-transformed fish species data, constrained
-## by all the environmental variables contained in env3
-(spe_rda <- rda(spe_hel ~ ., env1)) # Observe the shortcut formula
+## by all the environmental variables contained in env3 plus interaction of temp and hum
+(spe_rda <- rda(spe_hel ~ temp_mean + 
+                  hum_mean + 
+                  temp_mean*hum_mean +
+                  monitoreo +
+                  tipo_trampa +
+                  Condition(ubicacion), env1)) # Observe the shortcut formula
 summary(spe_rda)	# Scaling 2 (default)
 
 # Canonical coefficients from the rda object
@@ -125,4 +130,4 @@ sel_sp <- which(spe_good[, 2] >= 0.6)
 # Global test of the RDA result
 anova(spe_rda, permutations = how(nperm = 999))
 # Tests of all canonical axes
-anova(spe_rda, by = "axis", permutations = how(nperm = 999))
+anova(spe_rda, by = "terms", permutations = how(nperm = 999))
