@@ -12,13 +12,25 @@ library("lubridate")
 library(plotrix) #Standard error
 
 
-#For CA
+# For CA
 library(ade4)
 library(vegan)
 library(gclus)
 library(ape)
 library(missMDA)
 library(FactoMineR)
+
+# For RDA
+library(ade4)
+library(adegraphics)
+library(adespatial)
+library(cocorresp)
+library(vegan)
+library(vegan3d)
+library(MASS)
+library(ellipse)
+library(FactoMineR)
+library(rrcov)
 
 # library(RColorBrewer) #For PCA analysis
 # #library(ellipse)
