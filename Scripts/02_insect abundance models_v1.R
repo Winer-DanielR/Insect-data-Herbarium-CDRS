@@ -2,37 +2,52 @@
 
 ### Data exploration of insect dataset and environmental variables
 
-pest_data <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/datos de insectos y temperatura final.csv")
+pest_data <- read_csv("Data/Processed/datos de insectos y temperatura final.csv")
+pest_data <- as_tibble(pest_data)
 
-# Ajustar variables como factores
-pest_data <- pest_data %>% mutate_at(vars(periodo_monitoreo,
-                                                monitoreo,
-                                                tipo_trampa,
-                                                marca_trampa,
-                                                trampa_ID_unico,
-                                                ubicacion,
-                                                orden,
-                                                familia,
-                                                especie), list(factor))
+# Add variable column  "year"
+pest_data$year <- year(pest_data$fecha_recogida)
+select(pest_data, fecha_puesta:fecha_recogida, year, everything())
 
-names(monitor_data)
-head(monitor_data)
-str(monitor_data)
 
-####### Efecto de humedad sobre cantidad de insectos ####
+# Changed variables to factors and scaled temperature and humidity
+pest_data <- pest_data %>% mutate_at(vars(fecha_puesta, monitoreo, 
+                                          year, tipo_trampa, 
+                                          ubicacion), list(factor))
+pest_data$humedad_scaled <- scale(pest_data$hum_mean)
+pest_data$temperatura_scaled <-scale(pest_data$temp_mean)
+pest_data$log_abundancia_trampa <- log(pest_data$abundancia_trampa + 1)
+hist(pest_data$abundancia_trampa)
+hist(pest_data$log_abundancia_trampa)
 
-full_model <- glmer(cantidad ~ humedad_scaled + temperatura_scaled + humedad_scaled*temperatura_scaled + 
-                      trampa + (1|tiempo) + (1|num_trampa) + (1|nombre_cientifico) + (1|herbario), family=poisson, 
+#Exploring the data
+ggplot(pest_data) +
+  aes(x = year, y = log_abundancia_trampa, fill = familia) +
+  geom_boxplot() +
+  scale_fill_hue() +
+  theme_minimal() +
+  facet_wrap(vars(tipo_trampa))
+
+head(pest_data)
+str(pest_data)
+
+# FITTING A GLMM 
+
+####### Modelo general considerando la humedad, la temperatura y la interaccion de humedad y temperatura ####
+full_model <- glmer(abundancia_trampa ~ humedad_scaled + temperatura_scaled + humedad_scaled*temperatura_scaled + 
+                      tipo_trampa + (1|monitoreo) + (1|num_trampa_monitoreo) + (1|especie) + (1|ubicacion), family=poisson, 
                     data=pest_data, control=glmerControl(optimizer="bobyqa", optCtrl=list(maxfun=2e5)))
 
+
 #Diagnostic models
-plot(fitted(full_model_scaled),resid(full_model_scaled)) 
+plot(fitted(full_model),resid(full_model)) 
 abline(h=0,lty=2,col="red")
-qqnorm(resid(full_model_scaled))
-qqline(resid(full_model_scaled), col="red")
-hist(resid(full_model_scaled))
+qqnorm(resid(full_model))
+qqline(resid(full_model), col="red")
+hist(resid(full_model))
+
 
 ##### Anova comparando cada response variable (humedad y temeperatura media)
-Anova(full_model_scaled)
-emmeans::emmeans(full_model_scaled, specs = "temp_mean")
+Anova(full_model) # Anova of the full model using the package cars. Summary shows significance per explanatory
+emmeans::emmeans(full_model, specs = "tipo_trampa")
 emmeans::ref_grid(full_model)
