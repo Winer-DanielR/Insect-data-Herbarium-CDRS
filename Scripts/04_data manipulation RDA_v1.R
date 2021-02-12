@@ -8,12 +8,26 @@ all_data <- read_csv("Data/Processed/datos de insectos y temperatura final.csv")
 
 # Filtrar columnas
 
-abundance <- select(all_data, trampa_ID_unico, especie, abundancia_trampa)
-
+abundance_species <- select(all_data, trampa_ID_unico, especie, abundancia_trampa)
+abundance_order <- select(all_data, trampa_ID_unico, orden, abundancia_trampa)
 # Cambiar especies a una serie de columnas con su abundancia respectiva por trampa
 
-species <- abundance %>% group_by(trampa_ID_unico) %>% dplyr::mutate(i1 = row_number()) %>% spread(especie, abundancia_trampa) %>% select(-i1)
+# Para especies
+species <- abundance_species %>% group_by(trampa_ID_unico) %>% dplyr::mutate(i1 = row_number()) %>% spread(especie, abundancia_trampa) %>% select(-i1)
 species[is.na(species)] = 0
+
+# Para orden
+orden <- abundance_order %>% group_by(trampa_ID_unico) %>% dplyr::mutate(i1 = row_number()) %>% spread(orden, abundancia_trampa) %>% select(-i1)
+orden[is.na(orden)] = 0
+
+# Remover columna de NA en orden
+orden <- select(orden, c(1:14))
+# Sumar abundancias por trampa
+orden_sum <- orden %>% group_by(trampa_ID_unico) %>%
+  summarize(across(c(1:13), sum))
+
+# Exportar matriz de orden
+write_csv(orden_sum, "Data/Processed/Matrix orden.csv")
 
 # Combinar tablas y filtrar columnas. REMOVER: 
 species_all <- bind_cols(species, all_data)
@@ -23,7 +37,7 @@ species_col <- species_all[-c(57:59,61:73)]
 str(species_col)
 species_col <- species_col %>% mutate_at(vars(c(52:57)), list(factor))
 
-
+# Sumar el numero de abundancia por cada trampa ID:
 species_sum <- species_col %>% group_by(trampa_ID_unico) %>%
   summarize(across(c(1:48), sum))
 
