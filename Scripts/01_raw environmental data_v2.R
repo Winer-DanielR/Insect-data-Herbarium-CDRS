@@ -52,7 +52,6 @@ monitor_data <- monitor_data %>% mutate_at(vars(periodo_monitoreo,
 
 # num_trampa_monitoreo es un trampa ID por monitoreo.
 
-
 ##### Estimate summary statistics per month similar to the intervals in the insect data ####
 
 #1st interval 2017_May - 2017_Dic
