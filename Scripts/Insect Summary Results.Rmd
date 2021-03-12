@@ -1,12 +1,19 @@
 ---
 title: "Análisis de datos de insectos colectados en el Herbario de CDRS"
-author: 
-date: 
+author: "Daniel Reyes Corral" 
+date: "9 de Marzo, 2021"
 output:
   word_document:
   reference_docx: StylesTemplate.docx
   keep_md: true
-bibliography: "`r rbbt::bbt_write_bib('biblio.json', overwrite = TRUE)`"
-
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r Scripts, include=FALSE}
+source("00_packages_v2.R", local = knitr::knit_global())
+source("05_RDA_v1.R", local = knitr::knit_global())
+source("06_CA_v1.R", local = knitr::knit_global())
+```
