@@ -5,12 +5,14 @@
 
 
 library(tidyverse) #For data cleaning and graphs
-library(lme4) #For modeling
-library(car) #For model analysis
+# library(lme4) #For modeling
+# library(car) #For model analysis
 library(readr) #For reading cvs files
 library("lubridate")
 library(plotrix) #Standard error
-
+# library(emmeans)
+# library(DHARMa)
+# library(glmmTMB)
 
 # For CA
 library(ade4)
