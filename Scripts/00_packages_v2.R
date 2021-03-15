@@ -3,7 +3,6 @@
 ##### List of packages used for analysis
 ### Package scripts
 
-
 library(tidyverse) #For data cleaning and graphs
 # library(lme4) #For modeling
 # library(car) #For model analysis
@@ -29,7 +28,7 @@ library(adespatial)
 library(cocorresp)
 library(vegan)
 library(vegan3d)
-library(MASS)
+# library(MASS)
 library(ellipse)
 library(FactoMineR)
 library(rrcov)
