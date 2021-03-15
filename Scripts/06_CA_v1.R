@@ -3,12 +3,13 @@
 ## CA of the raw species dataset (species abundance per trap)
 
 # Import dataset
-spe_matrix <- read_csv("Data/Processed/Matrix especies.csv")
-orden_matrix <- read_csv("Data/Processed/Matrix orden.csv")
-env_matrix <- read_csv("Data/Processed/Matrix temperatura humedad.csv")
+spe_matrix <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix especies.csv")
+orden_matrix <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix orden.csv")
+orden_matrix <- dplyr::select(orden_matrix, -trampa_ID_unico)
+env_matrix <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix temperatura humedad.csv")
 insects <- spe_matrix[-c(1,50:57)]
 insect_log <- log(insects + 1) # Log transformed data for heat map
-
+orden_log <- log(orden_matrix + 1)
 # Compute CA
 
 insects_ca <- cca(insects)
@@ -21,14 +22,16 @@ summary(insects_ca, scaling = 1) # Rows (traps) are at the centroid of
                     # appropriate if one is insterested in the ordination
                     # of objects.
 
-orden_ca <- cca(orden)
+
+# Orden CA
+orden_ca <- cca(orden_matrix)
 summary(orden_ca)
 summary(orden_ca, scaling = 1)
 
 # Scree plots and broken stick model using vegan's screeplot.cca()
 dev.new(tittle = "Scree plot of CA eigenvalues", noRStudioGD = TRUE)
 screeplot(insects_ca, bstick = TRUE, npcs = length(insects_ca$CA$eig))
-
+# Orden
 screeplot(orden_ca, bstick = TRUE, npcs = length(orden_ca$CA$eig))
 
 # CA biplots
@@ -70,11 +73,11 @@ ordisurf(orden_ca, env_matrix$hum_mean, add = TRUE, col = "green")
 
 # Species data table ordered after CA results
 vegemite(insect_log, insects_ca, scale = "Hill")
-vegemite(orden, orden_ca, scale = "Hill")
+vegemite(orden_log, orden_ca, scale = "Hill")
 
 # CA - ordered species table illustrated as a heat map
 dev.new(title = "CA - ordered species table - heat map",
         noRStudioGD = TRUE)
 
 tabasco(insect_log, insects_ca)
-tabasco(orden, orden_ca)
+tabasco(orden_log, orden_ca)
