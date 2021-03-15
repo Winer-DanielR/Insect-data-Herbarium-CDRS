@@ -1,7 +1,7 @@
 # ==== 1) Datos por trampas ====
 
 # Abundancia especies ####
-species <- read_csv("Data/Processed/Matrix especies.csv")
+species <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix especies.csv")
 
 # Filter other columns and only use the species
 species <- species[-c(50:57)]
@@ -13,7 +13,7 @@ species <- species %>% column_to_rownames("trampa_ID_unico")
 species_hel <- decostand(species, "hellinger") # Trap species transformed
 
 # Abundancia Orden ####
-orden <- read_csv("Data/Processed/Matrix orden.csv")
+orden <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix orden.csv")
 
 # Change the rows ID with the traps IDs
 orden <- orden %>% column_to_rownames("trampa_ID_unico")
@@ -22,14 +22,14 @@ orden <- orden %>% column_to_rownames("trampa_ID_unico")
 orden_hel <- decostand(orden, "hellinger")
 
 # Datos ambientales y experimentales ####
-env <- read_csv("Data/Processed/Matrix temperatura humedad.csv")
+env <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix temperatura humedad.csv")
 
 # Change the rows ID with the traps IDs
 env <- env %>% column_to_rownames("trampa_ID_unico")
 
 # Subset environmental variables
 # Includes all the environmental variables plus some experimental variables
-env1 <- select(env,
+env1 <- dplyr::select(env,
                temp_mean,
                temp_max,
                temp_min,
@@ -42,11 +42,12 @@ env1 <- select(env,
 
 # Monitoreo, tipo de trampa y ubicacion convertidos en factores
 env1 <- env1 %>% mutate_at(vars(ubicacion,
-                                marca_trampa), list(factor))
+                                # marca_trampa
+                                ), list(factor))
 
 # Matrices para RDA parcial ####
 # Temperatura y humedad
-tem_hum <- select(env,
+tem_hum <- dplyr::select(env,
                   temp_mean,
                   temp_max,
                   temp_min,
@@ -55,7 +56,7 @@ tem_hum <- select(env,
                   hum_min)
 
 # Variables experimentales
-experimental_var <- select(env,
+experimental_var <- dplyr::select(env,
                    year,
                    ubicacion,
                    )
@@ -64,7 +65,7 @@ experimental_var <- experimental_var %>% mutate_at(vars(ubicacion), list(factor)
 
 # ==== 2) Datos por monitoreo ====
 # Load dataset
-monitoreo <- read_csv("Data/Processed/Matrix abundancia orden por monitoreo.csv")
+monitoreo <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix abundancia orden por monitoreo.csv")
 
 # Species matriz por monitoreo
 monitoreo_abundance <- monitoreo[-c(14:23)]
@@ -278,68 +279,68 @@ triplot.rda(orden_rda,
             label.centr = F
 )
 
-## Site scores as linear combinations of the environmental variables
-dev.new(
-  title = "RDA scaling 1 and 2 + lc",
-  width = 16,
-  height = 8,
-  noRStudioGD = TRUE
-)
-par(mfrow = c(1, 2))
-plot(orden_rda,
-     scaling = 1,
-     display = c("sp", "lc", "cn"),
-     main = "Triplot RDA spe.hel ~ env3 - scaling 1 - lc scores"
-)
-spe.sc1_orden <- 
-  scores(orden_rda, 
-         choices = 1:2, 
-         scaling = 1, 
-         display = "sp"
-  )
-arrows(0, 0, 
-       spe.sc1[, 1] * 0.92,
-       spe.sc1[, 2] * 0.92,
-       length = 0, 
-       lty = 1, 
-       col = "red"
-)
-# text(-0.75, 0.7, "a", cex = 1.5)
-
-# Scaling 2
-plot(orden_rda, 
-     display = c("sp", "lc", "cn"), 
-     main = "Triplot RDA spe.hel ~ env3 - scaling 2 - lc scores"
-)
-spe.sc2_orden <- 
-  scores(orden_rda, 
-         choices = 1:2, 
-         display = "sp"
-  )
-arrows(0, 0, 
-       spe.sc2[, 1] * 0.92, 
-       spe.sc2[, 2] * 0.92,
-       length = 0,
-       lty = 1,
-       col = "red"
-)
+# ## Site scores as linear combinations of the environmental variables
+# dev.new(
+#   title = "RDA scaling 1 and 2 + lc",
+#   width = 16,
+#   height = 8,
+#   noRStudioGD = TRUE
+# )
+# par(mfrow = c(1, 2))
+# plot(orden_rda,
+#      scaling = 1,
+#      display = c("sp", "lc", "cn"),
+#      main = "Triplot RDA spe.hel ~ env3 - scaling 1 - lc scores"
+# )
+# spe.sc1_orden <- 
+#   scores(orden_rda, 
+#          choices = 1:2, 
+#          scaling = 1, 
+#          display = "sp"
+#   )
+# arrows(0, 0, 
+#        spe.sc1[, 1] * 0.92,
+#        spe.sc1[, 2] * 0.92,
+#        length = 0, 
+#        lty = 1, 
+#        col = "red"
+# )
+# # text(-0.75, 0.7, "a", cex = 1.5)
+# 
+# # Scaling 2
+# plot(orden_rda, 
+#      display = c("sp", "lc", "cn"), 
+#      main = "Triplot RDA spe.hel ~ env3 - scaling 2 - lc scores"
+# )
+# spe.sc2_orden <- 
+#   scores(orden_rda, 
+#          choices = 1:2, 
+#          display = "sp"
+#   )
+# arrows(0, 0, 
+#        spe.sc2[, 1] * 0.92, 
+#        spe.sc2[, 2] * 0.92,
+#        length = 0,
+#        lty = 1,
+#        col = "red"
+# )
 # text(-0.82, 0.55, "b", cex = 1.5)
 
 ## Triplots of the rda results (wa scores)
 ## Site scores as weighted averages (vegan's default)
 # Scaling 1 :  distance triplot
-dev.new(title = "RDA scaling 1 + wa", noRStudioGD = TRUE)
-plot(orden_rda, 
-     scaling = 1, 
-     main = "Triplot RDA spe.hel ~ env3 - scaling 1 - wa scores"
-)
-arrows(0, 0, 
-       spe.sc1[, 1] * 0.92, 
-       spe.sc1[, 2] * 0.92, 
-       length = 0, 
-       lty = 1, 
-       col = "red"
-)
+# dev.new(title = "RDA scaling 1 + wa", noRStudioGD = TRUE)
+# plot(orden_rda, 
+#      scaling = 1, 
+#      main = "Triplot RDA spe.hel ~ env3 - scaling 1 - wa scores"
+# )
+# arrows(0, 0, 
+#        spe.sc1[, 1] * 0.92, 
+#        spe.sc1[, 2] * 0.92, 
+#        length = 0, 
+#        lty = 1, 
+#        col = "red"
+# )
 
 # Select species with goodness-of-fit at least 0.6 in the 
 # ordination plane formed by axes 1 and 2
@@ -365,69 +366,69 @@ as_tibble(coef_monitoreo_rda)
 # Adjusted R^2 retrieved from the rda object
 (R2adj_monitoreo <- RsquareAdj(monitoreo_rda)$adj.r.squared)
 
-## 3.3 Triplots of the rda results (lc scores) ####
-## Site scores as linear combinations of the environmental variables
-dev.new(
-  title = "RDA scaling 1 and 2 + lc",
-  width = 16,
-  height = 8,
-  noRStudioGD = TRUE
-)
-par(mfrow = c(1, 2))
-plot(monitoreo_rda,
-     scaling = 1,
-     display = c("sp", "lc", "cn"),
-     main = "Triplot RDA spe.hel ~ env3 - scaling 1 - lc scores"
-)
-spe.sc1_monitoreo <- 
-  scores(monitoreo_rda, 
-         choices = 1:2, 
-         scaling = 1, 
-         display = "sp"
-  )
-arrows(0, 0, 
-       spe.sc2[, 1] * 0.92, 
-       spe.sc2[, 2] * 0.92,
-       length = 0,
-       lty = 1,
-       col = "red"
-)
-# text(-0.75, 0.7, "a", cex = 1.5)
-
-# Scaling 2
-plot(monitoreo_rda, 
-     display = c("sp", "lc", "cn"), 
-     main = "Triplot RDA spe.hel ~ env3 - scaling 2 - lc scores"
-)
-spe.sc2_orden <- 
-  scores(monitoreo_rda, 
-         choices = 1:2, 
-         display = "sp"
-  )
-arrows(0, 0, 
-       spe.sc2[, 1] * 0.92, 
-       spe.sc2[, 2] * 0.92,
-       length = 0,
-       lty = 1,
-       col = "red"
-)
-# text(-0.82, 0.55, "b", cex = 1.5)
-
-## Triplots of the rda results (wa scores)
-## Site scores as weighted averages (vegan's default)
-# Scaling 1 :  distance triplot
-dev.new(title = "RDA scaling 1 + wa", noRStudioGD = TRUE)
-plot(monitoreo_rda, 
-     scaling = 1, 
-     main = "Triplot RDA spe.hel ~ env3 - scaling 1 - wa scores"
-)
-arrows(0, 0, 
-       spe.sc1[, 1] * 0.92, 
-       spe.sc1[, 2] * 0.92, 
-       length = 0, 
-       lty = 1, 
-       col = "red"
-)
+# ## 3.3 Triplots of the rda results (lc scores) ####
+# ## Site scores as linear combinations of the environmental variables
+# dev.new(
+#   title = "RDA scaling 1 and 2 + lc",
+#   width = 16,
+#   height = 8,
+#   noRStudioGD = TRUE
+# )
+# par(mfrow = c(1, 2))
+# plot(monitoreo_rda,
+#      scaling = 1,
+#      display = c("sp", "lc", "cn"),
+#      main = "Triplot RDA spe.hel ~ env3 - scaling 1 - lc scores"
+# )
+# spe.sc1_monitoreo <- 
+#   scores(monitoreo_rda, 
+#          choices = 1:2, 
+#          scaling = 1, 
+#          display = "sp"
+#   )
+# arrows(0, 0, 
+#        spe.sc2[, 1] * 0.92, 
+#        spe.sc2[, 2] * 0.92,
+#        length = 0,
+#        lty = 1,
+#        col = "red"
+# )
+# # text(-0.75, 0.7, "a", cex = 1.5)
+# 
+# # Scaling 2
+# plot(monitoreo_rda, 
+#      display = c("sp", "lc", "cn"), 
+#      main = "Triplot RDA spe.hel ~ env3 - scaling 2 - lc scores"
+# )
+# spe.sc2_orden <- 
+#   scores(monitoreo_rda, 
+#          choices = 1:2, 
+#          display = "sp"
+#   )
+# arrows(0, 0, 
+#        spe.sc2[, 1] * 0.92, 
+#        spe.sc2[, 2] * 0.92,
+#        length = 0,
+#        lty = 1,
+#        col = "red"
+# )
+# # text(-0.82, 0.55, "b", cex = 1.5)
+# 
+# ## Triplots of the rda results (wa scores)
+# ## Site scores as weighted averages (vegan's default)
+# # Scaling 1 :  distance triplot
+# dev.new(title = "RDA scaling 1 + wa", noRStudioGD = TRUE)
+# plot(monitoreo_rda, 
+#      scaling = 1, 
+#      main = "Triplot RDA spe.hel ~ env3 - scaling 1 - wa scores"
+# )
+# arrows(0, 0, 
+#        spe.sc1[, 1] * 0.92, 
+#        spe.sc1[, 2] * 0.92, 
+#        length = 0, 
+#        lty = 1, 
+#        col = "red"
+# )
 
 # Select species with goodness-of-fit at least 0.6 in the 
 # ordination plane formed by axes 1 and 2
@@ -597,7 +598,7 @@ triplot.rda(spe_rda_partial,
 orden.part.all <- varpart(orden_hel, tem_hum, experimental_var)
 
 # Monitoreo variance
-monitoreo.part.all <- varpart(monitoreo_hel, monitoreo_env)
+# monitoreo.part.all <- varpart(monitoreo_hel, monitoreo_env)
 
 #### Plot of the partitioning results ####
 dev.new(title = "Variation partitioning - all variables", 
