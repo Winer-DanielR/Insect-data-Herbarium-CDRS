@@ -1,0 +1,121 @@
+---
+title: "Insectos Herbario CDRS"
+author: "Daniel Reyes"
+date: "3/12/2021"
+output:
+  word_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+source("00_packages_v2.R", local = knitr::knit_global())
+source("triplot_RDA_Borcard2018.R", local = knitr::knit_global())
+source("06_CA_v1.R", local = knitr::knit_global())
+source("05_RDA_v1.R", local = knitr::knit_global())
+```
+
+## Efecto de la temperatura y humedad en la abundancia de insectos capturados en las instalaciones del Herbario de la Fundación Charles Darwin
+
+### Monitoreos
+
+Las trampas de insectos colocadas en el herbario fueron colectadas en diferentes ocasiones. Se utilizaron 57 trampas y se realizaron 8 monitoreos.
+
++-------------+---------------------------------+
+| Monitoreo   | Periodo                         |
++=============+=================================+
+| 1           | Mayo - Diciembre 2017           |
++-------------+---------------------------------+
+| 2           | Enero - Julio 2018              |
++-------------+---------------------------------+
+| 3           | Agosto 2018 - Febrero 2019      |
++-------------+---------------------------------+
+| 4           | Marzo - Septiembre 2019         |
++-------------+---------------------------------+
+| 5           | Febrero 2019 - Enero 2020       |
++-------------+---------------------------------+
+| 6           | Enero - Abril 2020              |
++-------------+---------------------------------+
+| 7           | Mayo - Julio 2020               |
++-------------+---------------------------------+
+| 8           | Agosto - Octubre 2020           |
++-------------+---------------------------------+
+
+: Periodos de los monitoreos realizados
+
+### Variación de la temperatura y humedad del herbario
+
+La temperatura y humedad del herbario son monitoreadas diariamente. Se estimó el promedio, la máxima y mínima temperatura y humedad de cada monitoreo.
+
+## Resultados
+
+Se preparó una matriz de la abundancia de insectos encontrados en cada trampa por monitoreos. Los insectos fueron identificados a nivel de especie y orden. Estos datos de abundancia fueron utilizados para realizar un análisis de redundancia (RDA) para determinar el efecto de la temperatura y humedad en la abundancia de insectos.
+
+### Abundancia de insectos por trampa
+
+Las tres especies más abundante encontradas a lo largo de todos los monitoreos fueron: *Porcellionides pruinosus* - Isopoda (n = 544), *Lachesilla sp.* - Psocoptera (n = 63) y *Megaselia sp.* - Diptera (n = 45).
+
+```{r heat map, echo=F, message=FALSE, fig.cap="Matriz de abundancia de insectos por trampa. Los colores son relativos a la abundancia encontrada de cada especie y orden de insectos. El color rojo representa las especies más abundantes encontradas en las trampas", fig.width=5}
+
+par(mfrow = c(1,2))
+
+tabasco(insect_log, insects_ca)
+tabasco(orden_log, orden_ca)
+
+```
+
+## Análisis de redundancia (RDA)
+
+El análisis de redundancia es un método que extrae y resume la variación de un conjunto de variables de respuesta (abundancia de especies) que pueden ser explicadas por un conjunto de variables explicativas (temperatura y humedad). Resume las relaciones entre los componentes de las variables de respuesta que son *redundantes* o *explicados* por el set the variables explicativas.
+
+El resultado es una proporción de la varianza que está explicada por las variables y la varianza *no redundante*.
+
+El resultado del RDA gráficamente demuestra la distancia entre los objetos es proporcional a sus valores. Se pueden obtener dos tipos de gráficos que se diferencian en el tipo de escala (1 y 2). Escala 1, explica los ángulos entre los vectores que representan la abundancia de las especies y los ángulos de temperatura y humedad reflejan su correlación linear. En la escala 2 los ángulos dentro de las especies o en los parámetros ambientales reflejan una correlación. Si tienen un ángulo recto no hay correlación, si los vectores tienen un ángulo de 20° tienen una correalción fuerte y positiva.
+
+```{r species triplot, echo=FALSE, fig.cap="Análisis de redundancia (RDA) de la abundancia de especies de insectos encontradas en los monitoreos del Herbario (vectores rojos). En relación con los parámetros ambientales de temperatura y humedad (vectores azules). Los puntos negros son las relaciones entre las trampas colocadas. Los gráficos muestran las cuatro especies con mayor relación a los cambios de temperatura y humedad.", message=FALSE}
+plot1 <- triplot.rda(spe_rda,
+            site.sc = "lc",
+            scaling = 1,
+            cex.char2 = 0.7,
+            pos.env = 3,
+            pos.centr = 1,
+            mult.arrow = 1.1,
+            mar.percent = 0.05,
+            select.spe = sel_sp,
+            plot.sites = T,
+            arrows.only = F,
+            label.sites = F,
+            label.centr = F
+)
+plot2 <- triplot.rda(spe_rda,
+            site.sc = "lc",
+            scaling = 2,
+            cex.char2 = 0.7,
+            pos.env = 3,
+            pos.centr = 1,
+            mult.arrow = 1.1,
+            mar.percent = 0.05,
+            select.spe = sel_sp,
+            plot.sites = T,
+            arrows.only = F,
+            label.sites = F,
+            label.centr = F
+)
+```
+
+Estos resultados nos indican que la abundancia de ciertas especies está más relacionada a los cambios de temperatura o de humedad respectivamente.
+
+### Análisos de partición de la Varianza
+
+Este análisis muestra la proporción de varianza explicada por las condiciones ambientales (temperatura y humedad) y las condiciones experimentales (monitoreo, tipo de trampa). El número fuera del diagrama indica la varianza que no pudo ser explicada por estos factores. La varianza central no debe ser confundida con una interacción entre los términos. Mas bien, es porque hay una correlación entre los diferentes conjuntos de variables.
+
+```{r Variance partition, echo=FALSE}
+# Species
+plot(spe.part.all, 
+     digits = 2, 
+     bg = c("red", "blue"),
+     Xnames = c("Environmental", "Experimental"),
+     id.size = 1
+     )
+```
+
+La variación explicada por los cambios de temperatura y humedad es más baja que la varianza no explicada por los parámetros, por lo que los resultados se deben tomar con cuidado. Sin embargo dentro de los análisis realizados los cambios de humedad parecen tener un mayor efecto en la adundancia de ciertas especies de insectos.
