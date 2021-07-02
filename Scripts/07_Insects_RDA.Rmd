@@ -3,8 +3,8 @@ title: "Insectos Herbario CDRS"
 author: "Daniel Reyes"
 date: "3/12/2021"
 output:
-  word_document: default
   html_document: default
+  word_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -20,25 +20,16 @@ source("05_RDA_v1.R", local = knitr::knit_global())
 
 Las trampas de insectos colocadas en el herbario fueron colectadas en diferentes ocasiones. Se utilizaron 57 trampas y se realizaron 8 monitoreos.
 
-+-------------+---------------------------------+
-| Monitoreo   | Periodo                         |
-+=============+=================================+
-| 1           | Mayo - Diciembre 2017           |
-+-------------+---------------------------------+
-| 2           | Enero - Julio 2018              |
-+-------------+---------------------------------+
-| 3           | Agosto 2018 - Febrero 2019      |
-+-------------+---------------------------------+
-| 4           | Marzo - Septiembre 2019         |
-+-------------+---------------------------------+
-| 5           | Febrero 2019 - Enero 2020       |
-+-------------+---------------------------------+
-| 6           | Enero - Abril 2020              |
-+-------------+---------------------------------+
-| 7           | Mayo - Julio 2020               |
-+-------------+---------------------------------+
-| 8           | Agosto - Octubre 2020           |
-+-------------+---------------------------------+
+| Monitoreo | Periodo                    |
+|-----------|----------------------------|
+| 1         | Mayo - Diciembre 2017      |
+| 2         | Enero - Julio 2018         |
+| 3         | Agosto 2018 - Febrero 2019 |
+| 4         | Marzo - Septiembre 2019    |
+| 5         | Febrero 2019 - Enero 2020  |
+| 6         | Enero - Abril 2020         |
+| 7         | Mayo - Julio 2020          |
+| 8         | Agosto - Octubre 2020      |
 
 : Periodos de los monitoreos realizados
 
@@ -54,7 +45,7 @@ Se preparó una matriz de la abundancia de insectos encontrados en cada trampa p
 
 Las tres especies más abundante encontradas a lo largo de todos los monitoreos fueron: *Porcellionides pruinosus* - Isopoda (n = 544), *Lachesilla sp.* - Psocoptera (n = 63) y *Megaselia sp.* - Diptera (n = 45).
 
-```{r heat map, echo=F, message=FALSE, fig.cap="Matriz de abundancia de insectos por trampa. Los colores son relativos a la abundancia encontrada de cada especie y orden de insectos. El color rojo representa las especies más abundantes encontradas en las trampas", fig.width=5}
+```{r heat map, echo=F, fig.cap="Matriz de abundancia de insectos por trampa. Los colores son relativos a la abundancia encontrada de cada especie y orden de insectos. El color rojo representa las especies más abundantes encontradas en las trampas", fig.width=5, message=FALSE}
 
 par(mfrow = c(1,2))
 
