@@ -1,18 +1,34 @@
-# ==== 1) Datos por trampas ====
+# ================ README ===============
 
-# Abundancia especies ####
+# Creamos dos tipos de analisis. Un analisis por trampas y otro por monitoreos
+# El analisis por trampas muestra más variación que el de monitoreos por la diferencia
+# de número de muestras.Entonces para el análisis usaremos los resultados por trampas.
+# La primera seccion incluye preparar los datos para los RDAs.
+# La segunda seccion
+
+# Seccion 1: PREPARACION DE DATOS ####
+
+# ==== POR TRAMPA =======
+# Convertimos los datos de abundancia de especies a una matriz de presencia
+# y ausencia por especies. Donde cada columna es una especie y esta dividido por
+# el ID de las trampas.
+
+# Creamos y filtramos las matrices por especies de insectos y por orden
+# de insectos.
+
+## 1.1 Abundancia especies ####
 species <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix especies.csv")
 
-# Filter other columns and only use the species
+# Filtramos las columnas para seleccionar las especies
 species <- species[-c(50:57)]
 
-# Change the rows ID with the traps IDs
+# Cambiamos los nombres de las filas por el ID de las trampas.
 species <- species %>% column_to_rownames("trampa_ID_unico")
 
 # Transformar la matriz de especies en hellinger
 species_hel <- decostand(species, "hellinger") # Trap species transformed
 
-# Abundancia Orden ####
+## 1.2 Abundancia Orden ####
 orden <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix orden.csv")
 
 # Change the rows ID with the traps IDs
@@ -21,14 +37,14 @@ orden <- orden %>% column_to_rownames("trampa_ID_unico")
 # Transformar la matriz de orden en hellinger
 orden_hel <- decostand(orden, "hellinger")
 
-# Datos ambientales y experimentales ####
+## 1.3 Datos ambientales y experimentales ####
 env <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix temperatura humedad.csv")
 
-# Change the rows ID with the traps IDs
+# Cambiamos el nombre de las filas por el nombre de las trampas
 env <- env %>% column_to_rownames("trampa_ID_unico")
 
-# Subset environmental variables
-# Includes all the environmental variables plus some experimental variables
+## 1.4 Creamos un subset de parametros ambientales y experimentales ####
+
 env1 <- dplyr::select(env,
                temp_mean,
                temp_max,
@@ -45,8 +61,10 @@ env1 <- env1 %>% mutate_at(vars(ubicacion,
                                 # marca_trampa
                                 ), list(factor))
 
-# Matrices para RDA parcial ####
-# Temperatura y humedad
+### 1.4.1 Matriz ambiental ####
+# Separamos una matriz de Temperatura y humedad.
+# Temperatura media, maxima y minima. Humedad media, maxima y minima.
+
 tem_hum <- dplyr::select(env,
                   temp_mean,
                   temp_max,
@@ -55,7 +73,10 @@ tem_hum <- dplyr::select(env,
                   hum_max,
                   hum_min)
 
-# Variables experimentales
+### 1.4.2 Matriz experimental #### 
+# Los parametros experimentales incluyen:
+# La ubicacion de las trampas, y el año de las trampas.
+
 experimental_var <- dplyr::select(env,
                    year,
                    ubicacion,
@@ -63,29 +84,36 @@ experimental_var <- dplyr::select(env,
 
 experimental_var <- experimental_var %>% mutate_at(vars(ubicacion), list(factor))
 
-# ==== 2) Datos por monitoreo ====
-# Load dataset
+
+# POR MONITOREO ####
+
+# Este es un subset de datos agrupados por monitoreos, en total se realizaron 7
+# monitoreos 
+
+## 1. Cargar la matriz general por monitoreo ####
 monitoreo <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix abundancia orden por monitoreo.csv")
 
-# Species matriz por monitoreo
+## 2. Crear matriz por especies por monitoreo ####
 monitoreo_abundance <- monitoreo[-c(14:23)]
 monitoreo_abundance <- monitoreo_abundance %>% column_to_rownames("monitoreo")
 
 # Transformacion hellinger
 monitoreo_hel <- decostand(monitoreo_abundance, "hellinger")
 
-# Matriz ambiental por monitoreo ####
+## 3. Matriz ambiental por monitoreo ####
 # Esta matriz ambiental incluye temperatura y humedad max y min
 monitoreo_env <- monitoreo[-c(1:13)]
 monitoreo_env <- monitoreo_env %>% column_to_rownames("monitoreo")
 
 
-#  ==== 3) Redundancy analysis (RDA) ====
+# Seccion 2: RDAs ####
 # RDAs con todas las variables ambientales y experimentales
 
-
-##### 3.1 RDA de especies ####
+##  2.1 RDA de especies ####
 (spe_rda <- rda(species_hel ~ ., env1)) # Observe the shortcut formula
+                                        # env1 incluye los datos ambientales y
+                                        # experimentales.
+
 summary(spe_rda)	# Scaling 2 (default)
 
 # Canonical coefficients from the rda object
@@ -96,115 +124,68 @@ reg_coefficients_species <- coef(spe_rda)
 # X does not explain more of the variation of Y than random normal
 # deviates would do. Adjusted R2 values can be negative, indicating
 # that the explanatory variables X do worse than a set of m random normal
-# deviates would.
+# deviates would. (From numerical ecology. Borcard, 2018)
 
 
 # Unadjusted R^2 retrieved from the rda object
-(R2_species <- RsquareAdj(spe_rda)$r.squared) # 0.3509966
+(R2_species <- RsquareAdj(spe_rda)$r.squared) # 0.3170584
 # Adjusted R^2 retrieved from the rda object
-(R2adj_species <- RsquareAdj(spe_rda)$adj.r.squared) # 0.1923513
-
 # The adjusted R2 measures the unbiased amount of explained variation and
 # will be used later for variation partitioning
+(R2adj_species <- RsquareAdj(spe_rda)$adj.r.squared) # 0.1685928
 
-# # Plot species RDA ###
-# ## Triplots of the rda results (lc scores)
-# # sites = trap IDs "lc"
-# # response variables = species abundance "sp"
-# # explanatory variables = environmental and experimental variables "cn"
-# ## Site scores as linear combinations of the environmental variables
-# 
-# # Scaling 1 > angles between response and explanatory variables reflect
-# # correlations
-# dev.new(
-#   title = "RDA scaling 1 and 2 + lc",
-#   width = 16,
-#   height = 8,
-#   noRStudioGD = TRUE
-# )
-# par(mfrow = c(1, 2))
-# plot(spe_rda,
-#      type = "point",
-#      scaling = 1,
-#      display = c("sp","cn","lc"),
-#      main = "Triplot RDA spe.hel ~ env3 - scaling 1 - lc scores"
-# )
-# spe.sc1 <- 
-#   scores(spe_rda, 
-#          choices = 1:2, 
-#          scaling = 1, 
-#          display = "sp"
-# )
-# arrows(0, 0, 
-#        spe.sc1[, 1] * 0.92,
-#        spe.sc1[, 2] * 0.92,
-#        length = 0, 
-#        lty = 1, 
-#        col = "red"
-# )
-# 
-# # Scaling 2
-# plot(spe_rda, 
-#      type = "point",
-#      display = c("sp", "cn", "lc"), 
-#      main = "Triplot RDA spe.hel ~ env3 - scaling 2 - lc scores"
-# )
-# spe.sc2 <- 
-#   scores(spe_rda, 
-#          choices = 1:2, 
-#          display = "sp"
-#   )
-# arrows(0, 0, 
-#        spe.sc2[, 1] * 0.92, 
-#        spe.sc2[, 2] * 0.92,
-#        length = 0,
-#        lty = 1,
-#        col = "red"
-# )
-# 
-# 
-# ## Triplots of the rda results (wa scores)
-# ## Site scores as weighted averages (vegan's default)
-# # Scaling 1 :  distance triplot
-# dev.new(title = "RDA scaling 1 + wa", noRStudioGD = TRUE)
-# plot(spe_rda,
-#      type = "point",
-#      scaling = 1, 
-#      main = "Triplot RDA spe.hel ~ env3 - scaling 1 - wa scores"
-# )
-# arrows(0, 0, 
-#        spe.sc1[, 1] * 0.92, 
-#        spe.sc1[, 2] * 0.92, 
-#        length = 0, 
-#        lty = 1, 
-#        col = "red"
-# )
-
-spe_good <- goodness(spe_rda)
-sel_sp <- which(spe_good[, 2] >= 0.2)
-# Filter species under a certain goodness of fit threshold to visually see the species more responsive to the environmental variables
-# sel_sp number is arbritrary
-
-#### 3.1 Species Triplot.rda function (Custom function from the book) ####
+#### 2.1.1 Plot RDA de especies 
+# Species Triplot.rda function (Custom function from the book)
 # Load the function
+
 source("triplot_RDA_Borcard2018.R")
 
 # Triplots with homemade function triplot.rda(), scalings 1 and 2
 # This function can improve the look of the triplots
-triplot.rda(spe_rda,
-            site.sc = "lc",
+
+# Filter species under a certain goodness of fit threshold 
+# to visually see the species more responsive to the environmental variables
+spe_good <- goodness(spe_rda)
+sel_sp <- which(spe_good[, 2] >= 0.2)
+# sel_sp number is arbritrary you can adjust it to include all the species but
+# that is visually difficult.
+
+# I run this code to color the sites. But is limited since I cannot include the 
+# vectors yet
+scl <- 3
+colvec <- c("red2", "green4", "mediumblue", "black")
+plot(spe_rda, type = "n", scaling = scl)
+with(env1, points(spe_rda, display = "wa", col = colvec[env1$ubicacion],
+                  scaling = scl, pch = 21, bg = colvec[env1$ubicacion]))
+text(spe_rda, display = "species", scaling = scl, cex = 0.8, col = "darkcyan", select = sel_sp)
+with(env1, legend("bottomright", legend = levels(env1$ubicacion), bty = "n",
+                  col = colvec, pch = 21, pt.bg = colvec))
+with(spe_rda, points(display = "wa", scaling = scl, cex = 0.8))
+
+# Scaling 1:
+as <- triplot.rda(spe_rda,
+            site.sc = "wa",
             scaling = 1,
             cex.char2 = 0.7,
+            cex.char1 = 0.7,
             pos.env = 3,
-            pos.centr = 1,
+            pos.centr = 2,
             mult.arrow = 1.1,
             mar.percent = 0.05,
             select.spe = sel_sp,
             plot.sites = T,
             arrows.only = F,
             label.sites = F,
-            label.centr = F
+            label.centr = F,
+            plot.spe = T,
+            plot.env = T,
+            plot.centr = T,
+            cex.point = 0
 )
+
+
+
+# Scaling 2:
 triplot.rda(spe_rda,
             site.sc = "lc",
             scaling = 2,
@@ -366,7 +347,7 @@ as_tibble(coef_monitoreo_rda)
 # Adjusted R^2 retrieved from the rda object
 (R2adj_monitoreo <- RsquareAdj(monitoreo_rda)$adj.r.squared)
 
-# ## 3.3 Triplots of the rda results (lc scores) ####
+# ## 3.3 Triplots of the rda results (lc scores) ###
 # ## Site scores as linear combinations of the environmental variables
 # dev.new(
 #   title = "RDA scaling 1 and 2 + lc",
@@ -489,6 +470,9 @@ anova(monitoreo_rda, by = "axis", permutations = how(nperm = 999))
 # First RDA all variables
 vif.cca(spe_rda)
 vif.cca(orden_rda)
+
+
+
 # # Partial RDA – environmental variables only
 # vif.cca(spe_trap)
 
@@ -669,3 +653,4 @@ anova(rda(species_hel, tem_hum_partial, experimental_var),
 anova(rda(species_hel, experimental_var, tem_hum_partial), 
       permutations = how(nperm = 999)
 )
+
