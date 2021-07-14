@@ -3,10 +3,10 @@
 ## CA of the raw species dataset (species abundance per trap)
 
 # Import dataset
-spe_matrix <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix especies.csv")
-orden_matrix <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix orden.csv")
+spe_matrix <- read_csv("~/R/03. Collaborations/01. CDRS Herbarium insects_Jaramillo/Insect-data-Herbarium-CDRS/Data/Processed/Matrix especies.csv")
+orden_matrix <- read_csv("~/R/03. Collaborations/01. CDRS Herbarium insects_Jaramillo/Insect-data-Herbarium-CDRS/Data/Processed/Matrix orden.csv")
 orden_matrix <- dplyr::select(orden_matrix, -trampa_ID_unico)
-env_matrix <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix temperatura humedad.csv")
+env_matrix <- read_csv("~/R/03. Collaborations/01. CDRS Herbarium insects_Jaramillo/Insect-data-Herbarium-CDRS/Data/Processed/Matrix temperatura humedad.csv")
 insects <- spe_matrix[-c(1,50:57)]
 insect_log <- log(insects + 1) # Log transformed data for heat map
 orden_log <- log(orden_matrix + 1)

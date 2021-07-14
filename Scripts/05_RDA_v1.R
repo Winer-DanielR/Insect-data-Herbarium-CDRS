@@ -17,7 +17,7 @@
 # de insectos.
 
 ## 1.1 Abundancia especies ####
-species <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix especies.csv")
+species <- read_csv("~/R/03. Collaborations/01. CDRS Herbarium insects_Jaramillo/Insect-data-Herbarium-CDRS/Data/Processed/Matrix especies.csv")
 
 # Filtramos las columnas para seleccionar las especies
 species <- species[-c(50:57)]
@@ -29,7 +29,7 @@ species <- species %>% column_to_rownames("trampa_ID_unico")
 species_hel <- decostand(species, "hellinger") # Trap species transformed
 
 ## 1.2 Abundancia Orden ####
-orden <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix orden.csv")
+orden <- read_csv("~/R/03. Collaborations/01. CDRS Herbarium insects_Jaramillo/Insect-data-Herbarium-CDRS/Data/Processed/Matrix orden.csv")
 
 # Change the rows ID with the traps IDs
 orden <- orden %>% column_to_rownames("trampa_ID_unico")
@@ -38,7 +38,7 @@ orden <- orden %>% column_to_rownames("trampa_ID_unico")
 orden_hel <- decostand(orden, "hellinger")
 
 ## 1.3 Datos ambientales y experimentales ####
-env <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix temperatura humedad.csv")
+env <- read_csv("~/R/03. Collaborations/01. CDRS Herbarium insects_Jaramillo/Insect-data-Herbarium-CDRS/Data/Processed/Matrix temperatura humedad.csv")
 
 # Cambiamos el nombre de las filas por el nombre de las trampas
 env <- env %>% column_to_rownames("trampa_ID_unico")
@@ -91,7 +91,7 @@ experimental_var <- experimental_var %>% mutate_at(vars(ubicacion), list(factor)
 # monitoreos 
 
 ## 1. Cargar la matriz general por monitoreo ####
-monitoreo <- read_csv("~/R/CDRS Herbarium insects/Insect-data-Herbarium-CDRS/Data/Processed/Matrix abundancia orden por monitoreo.csv")
+monitoreo <- read_csv("~/R/03. Collaborations/01. CDRS Herbarium insects_Jaramillo/Insect-data-Herbarium-CDRS/Data/Processed/Matrix abundancia orden por monitoreo.csv")
 
 ## 2. Crear matriz por especies por monitoreo ####
 monitoreo_abundance <- monitoreo[-c(14:23)]
@@ -160,7 +160,6 @@ with(env1, points(spe_rda, display = "wa", col = colvec[env1$ubicacion],
 text(spe_rda, display = "species", scaling = scl, cex = 0.8, col = "darkcyan", select = sel_sp)
 with(env1, legend("bottomright", legend = levels(env1$ubicacion), bty = "n",
                   col = colvec, pch = 21, pt.bg = colvec))
-with(spe_rda, points(display = "wa", scaling = scl, cex = 0.8))
 
 # Scaling 1:
 as <- triplot.rda(spe_rda,
