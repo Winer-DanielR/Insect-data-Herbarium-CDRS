@@ -14,6 +14,7 @@ abundance_order <- select(all_data, trampa_ID_unico, orden, abundancia_trampa)
 
 # Para especies
 species <- abundance_species %>% group_by(trampa_ID_unico) %>% dplyr::mutate(i1 = row_number()) %>% spread(especie, abundancia_trampa) %>% select(-i1)
+
 species[is.na(species)] = 0
 
 # Para orden
